@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %}<title>Search Results | FitPro GYM</title>{% endblock %}
+{% block page_title %}Global Search Everywhere{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-search me-2" style="color:var(--accent);"></i>Search Results</h1>
+        <div style="font-size:0.875rem; color:var(--text-muted);">Results for "{{ query }}"</div>
+    </div>
+</div>
+
+<div class="glass-card p-4 mb-4">
+    <form action="{% url 'global_search' %}" method="get" class="d-flex gap-2">
+        <input type="text" name="q" class="form-control form-control-lg" placeholder="Search members, trainers, equipment, payments..." value="{{ query }}">
+        <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-search"></i> Search</button>
+    </form>
+</div>
+
+<!-- Results Tabs -->
+<div class="row g-4 fade-in">
+    <!-- Members -->
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100">
+            <h5 style="font-weight:700; color:var(--primary-light);"><i class="fas fa-users me-2"></i>Members ({{ members|length }})</h5>
+            <ul class="list-group list-group-flush bg-transparent">
+                {% for m in members %}
+                <li class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center">
+                    <div>
+                        <div style="font-weight:600;">{{ m.full_name }}</div>
+                        <div style="font-size:0.78rem; color:var(--text-muted);">Mobile: {{ m.mobile }} · Plan: {{ m.plan.name|default:"None" }}</div>
+                    </div>
+                    {% if user.role == "ADMIN" %}
+                    <a href="{% url 'admin_member_edit' m.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                    {% endif %}
+                </li>
+                {% empty %}
+                <li class="list-group-item bg-transparent text-muted">No members match your search.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Trainers -->
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100">
+            <h5 style="font-weight:700; color:var(--success);"><i class="fas fa-user-tie me-2"></i>Trainers ({{ trainers|length }})</h5>
+            <ul class="list-group list-group-flush bg-transparent">
+                {% for t in trainers %}
+                <li class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center">
+                    <div>
+                        <div style="font-weight:600;">{{ t.name }}</div>
+                        <div style="font-size:0.78rem; color:var(--accent);">{{ t.specialization }} · {{ t.experience }} yrs exp</div>
+                    </div>
+                    {% if user.role == "ADMIN" %}
+                    <a href="{% url 'admin_trainer_edit' t.id %}" class="btn btn-sm btn-outline-primary">View</a>
+                    {% endif %}
+                </li>
+                {% empty %}
+                <li class="list-group-item bg-transparent text-muted">No trainers match your search.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Equipment -->
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100">
+            <h5 style="font-weight:700; color:var(--accent);"><i class="fas fa-dumbbell me-2"></i>Equipment ({{ equipments|length }})</h5>
+            <ul class="list-group list-group-flush bg-transparent">
+                {% for eq in equipments %}
+                <li class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center">
+                    <div>
+                        <div style="font-weight:600;">{{ eq.name }}</div>
+                        <div style="font-size:0.78rem; color:var(--text-muted);">Brand: {{ eq.brand|default:"N/A" }} · Condition: {{ eq.condition }}</div>
+                    </div>
+                    {% if user.role == "ADMIN" %}
+                    <a href="{% url 'admin_equipment_edit' eq.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                    {% endif %}
+                </li>
+                {% empty %}
+                <li class="list-group-item bg-transparent text-muted">No equipment matches your search.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Payments -->
+    <div class="col-md-6">
+        <div class="glass-card p-4 h-100">
+            <h5 style="font-weight:700; color:var(--danger);"><i class="fas fa-credit-card me-2"></i>Payments ({{ payments|length }})</h5>
+            <ul class="list-group list-group-flush bg-transparent">
+                {% for p in payments %}
+                <li class="list-group-item bg-transparent text-white border-secondary d-flex justify-content-between align-items-center">
+                    <div>
+                        <div style="font-weight:600;">Invoice: {{ p.invoice_no }}</div>
+                        <div style="font-size:0.78rem; color:var(--text-muted);">{{ p.member.full_name }} · Amount: ₹{{ p.amount }}</div>
+                    </div>
+                    <span class="badge {% if p.status == 'PAID' %}badge-paid{% else %}badge-pending{% endif %}">{{ p.status }}</span>
+                </li>
+                {% empty %}
+                <li class="list-group-item bg-transparent text-muted">No payments match your search.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

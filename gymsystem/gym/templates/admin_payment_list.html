@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}<title>Payment Management | FitPro GYM</title>{% endblock %}
+{% block page_title %}Payment Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-money-bill-wave me-2" style="color:var(--accent);"></i>Payment Management</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Payments</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'export_payments_csv' %}" class="btn btn-success btn-sm">
+            <i class="fas fa-file-csv me-1"></i> Export Payments CSV
+        </a>
+        <a href="{% url 'admin_payment_add' %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus me-1"></i> Add Payment
+        </a>
+    </div>
+</div>
+
+<div class="glass-card p-4 fade-in mb-4">
+    <form method="GET" class="row g-3">
+        <div class="col-md-5">
+            <select name="member_id" class="form-select">
+                <option value="">All Members</option>
+                {% for m in members %}
+                <option value="{{ m.id }}" {% if selected_member_id == m.id|stringformat:"s" %}selected{% endif %}>{{ m.full_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <select name="status" class="form-select">
+                <option value="">All Statuses</option>
+                <option value="PAID" {% if status_filter == "PAID" %}selected{% endif %}>Paid</option>
+                <option value="PENDING" {% if status_filter == "PENDING" %}selected{% endif %}>Pending</option>
+                <option value="FAILED" {% if status_filter == "FAILED" %}selected{% endif %}>Failed</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter me-1"></i> Filter</button>
+        </div>
+    </form>
+</div>
+
+<div class="glass-card p-4 fade-in">
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Invoice No</th>
+                    <th>Member</th>
+                    <th>Plan</th>
+                    <th>Total Paid</th>
+                    <th>Mode</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in payments %}
+                <tr>
+                    <td style="font-family:monospace; font-size:0.82rem; color:var(--text-muted);">{{ p.invoice_no|default:"—" }}</td>
+                    <td style="font-weight:700;">{{ p.member.full_name }}</td>
+                    <td>{{ p.plan.name|default:"General" }}</td>
+                    <td style="font-weight:800; color:var(--success);">₹{{ p.total_amount }}</td>
+                    <td><span class="badge" style="background:rgba(124,58,237,0.15); color:var(--primary-light);">{{ p.mode }}</span></td>
+                    <td style="font-size:0.82rem; color:var(--text-muted);">{{ p.payment_date|date:"d M Y" }}</td>
+                    <td>
+                        {% if p.status == "PAID" %}<span class="badge badge-paid">PAID</span>
+                        {% elif p.status == "PENDING" %}<span class="badge badge-pending">PENDING</span>
+                        {% else %}<span class="badge badge-failed">{{ p.status }}</span>{% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-1">
+                            <a href="{% url 'payment_invoice_printable' p.id %}" target="_blank" class="btn btn-sm btn-outline-primary" title="Print Invoice PDF">
+                                <i class="fas fa-print"></i> Invoice
+                            </a>
+                            <a href="{% url 'admin_payment_edit' p.id %}" class="btn btn-warning btn-sm"><i class="fas fa-pen"></i></a>
+                            <form action="{% url 'admin_payment_delete' p.id %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete payment record?')"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="8" class="text-center py-4" style="color:var(--text-muted);">No payment records found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

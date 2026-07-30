@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}<title>{% if mode == 'edit' %}Edit{% else %}Add{% endif %} Diet Plan | FitPro GYM</title>{% endblock %}
+{% block page_title %}{% if mode == 'edit' %}Edit{% else %}Add{% endif %} Diet Plan{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-apple-whole me-2" style="color:var(--success);"></i>{% if mode == 'edit' %}Edit{% else %}Add{% endif %} Diet Plan</h1>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-0"><li class="breadcrumb-item"><a href="{% url 'admin_diet_plan_list' %}">Diet Plans</a></li><li class="breadcrumb-item active">{{ mode|title }}</li></ol></nav>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+<div class="col-lg-9">
+<div class="glass-card p-4 fade-in">
+<form method="post" action="">
+    {% csrf_token %}
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label class="form-label">Member *</label>
+            <select name="member_id" class="form-select" required>
+                <option value="">Select Member</option>
+                {% for m in members %}
+                <option value="{{ m.id }}" {% if mode == 'edit' and diet_plan.member.id == m.id %}selected{% endif %}>{{ m.full_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Calories (kcal) *</label>
+            <input type="number" name="calories" class="form-control" required value="{% if mode == 'edit' %}{{ diet_plan.calories }}{% endif %}" placeholder="e.g. 2000">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Protein Goal (g)</label>
+            <input type="number" name="protein_goal" class="form-control" value="{% if mode == 'edit' %}{{ diet_plan.protein_goal }}{% endif %}" placeholder="e.g. 120">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Water Intake (L/day)</label>
+            <input type="number" name="water_intake" class="form-control" value="{% if mode == 'edit' %}{{ diet_plan.water_intake }}{% else %}3{% endif %}">
+        </div>
+        <div class="col-12">
+            <label class="form-label">🌅 Breakfast *</label>
+            <textarea name="breakfast" class="form-control" rows="3" required placeholder="e.g. Oats with banana, 2 eggs, 1 glass milk">{% if mode == 'edit' %}{{ diet_plan.breakfast }}{% endif %}</textarea>
+        </div>
+        <div class="col-12">
+            <label class="form-label">☀️ Lunch *</label>
+            <textarea name="lunch" class="form-control" rows="3" required placeholder="e.g. 2 roti, 1 bowl dal, salad, rice">{% if mode == 'edit' %}{{ diet_plan.lunch }}{% endif %}</textarea>
+        </div>
+        <div class="col-12">
+            <label class="form-label">🌙 Dinner *</label>
+            <textarea name="dinner" class="form-control" rows="3" required placeholder="e.g. Grilled chicken, vegetables, 1 roti">{% if mode == 'edit' %}{{ diet_plan.dinner }}{% endif %}</textarea>
+        </div>
+        <div class="col-12">
+            <label class="form-label">🍎 Snacks</label>
+            <textarea name="snacks" class="form-control" rows="2" placeholder="e.g. Nuts, fruit, protein shake">{% if mode == 'edit' %}{{ diet_plan.snacks }}{% endif %}</textarea>
+        </div>
+        <div class="col-12">
+            <label class="form-label">Notes</label>
+            <textarea name="notes" class="form-control" rows="2" placeholder="Additional nutrition notes...">{% if mode == 'edit' %}{{ diet_plan.notes }}{% endif %}</textarea>
+        </div>
+        <div class="col-12 d-flex gap-2">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i>Save Diet Plan</button>
+            <a href="{% url 'admin_diet_plan_list' %}" class="btn" style="background:rgba(255,255,255,0.07); color:var(--text-muted);">Cancel</a>
+        </div>
+    </div>
+</form>
+</div>
+</div>
+</div>
+{% endblock %}

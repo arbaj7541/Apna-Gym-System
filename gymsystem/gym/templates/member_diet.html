@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% block title %}<title>My Diet Plan | FitPro GYM</title>{% endblock %}
+{% block page_title %}My Diet Plan{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-apple-whole me-2" style="color:var(--success);"></i>My Diet Plan</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'member_dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Diet Plan</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+{% if latest_diet %}
+<!-- Current Diet Plan -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 fade-in">
+            <h5 style="font-weight:700; margin-bottom:1.5rem; color:var(--success);">🌿 Today's Nutrition Plan</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div style="background:rgba(245,158,11,0.08); border:1px solid rgba(245,158,11,0.2); border-radius:14px; padding:1.25rem;">
+                        <div style="font-size:0.75rem; color:var(--accent); text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:0.75rem;">🌅 Breakfast</div>
+                        <p style="font-size:0.9rem; color:var(--text-main); margin:0;">{{ latest_diet.breakfast }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.2); border-radius:14px; padding:1.25rem;">
+                        <div style="font-size:0.75rem; color:var(--success); text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:0.75rem;">☀️ Lunch</div>
+                        <p style="font-size:0.9rem; color:var(--text-main); margin:0;">{{ latest_diet.lunch }}</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div style="background:rgba(124,58,237,0.08); border:1px solid rgba(124,58,237,0.2); border-radius:14px; padding:1.25rem;">
+                        <div style="font-size:0.75rem; color:var(--primary-light); text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:0.75rem;">🌙 Dinner</div>
+                        <p style="font-size:0.9rem; color:var(--text-main); margin:0;">{{ latest_diet.dinner }}</p>
+                    </div>
+                </div>
+                {% if latest_diet.snacks %}
+                <div class="col-md-6">
+                    <div style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.2); border-radius:14px; padding:1.25rem;">
+                        <div style="font-size:0.75rem; color:var(--info); text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:0.75rem;">🍎 Snacks</div>
+                        <p style="font-size:0.9rem; color:var(--text-main); margin:0;">{{ latest_diet.snacks }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% if latest_diet.notes %}
+            <div style="background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:1rem; margin-top:1rem;">
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:600; margin-bottom:0.5rem;"><i class="fas fa-sticky-note me-1"></i> Notes</div>
+                <p style="font-size:0.875rem; margin:0; color:var(--text-muted);">{{ latest_diet.notes }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Nutrition Summary -->
+        <div class="glass-card p-4 mb-3 fade-in fade-in-delay-1">
+            <h6 style="font-weight:700; margin-bottom:1.25rem; color:var(--text-muted); text-transform:uppercase; font-size:0.78rem; letter-spacing:1px;">Nutrition Goals</h6>
+            <!-- Calories -->
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span style="font-size:0.82rem; font-weight:600;">🔥 Calories</span>
+                    <span style="font-size:0.82rem; color:var(--danger); font-weight:700;">{{ latest_diet.calories }} kcal</span>
+                </div>
+                <div class="progress" style="height:8px;">
+                    <div class="progress-bar" style="width:75%; background:linear-gradient(90deg,var(--danger),var(--accent));"></div>
+                </div>
+            </div>
+            <!-- Protein -->
+            {% if latest_diet.protein_goal %}
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span style="font-size:0.82rem; font-weight:600;">💪 Protein</span>
+                    <span style="font-size:0.82rem; color:var(--primary-light); font-weight:700;">{{ latest_diet.protein_goal }}g</span>
+                </div>
+                <div class="progress" style="height:8px;">
+                    <div class="progress-bar" style="width:60%; background:linear-gradient(90deg,var(--primary),var(--primary-light));"></div>
+                </div>
+            </div>
+            {% endif %}
+            <!-- Water -->
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-1">
+                    <span style="font-size:0.82rem; font-weight:600;">💧 Water</span>
+                    <span style="font-size:0.82rem; color:var(--info); font-weight:700;">{{ latest_diet.water_intake }}L / day</span>
+                </div>
+                <div class="d-flex gap-1 flex-wrap mt-1">
+                    {% for i in "12345678"|make_list %}
+                        <div style="width:32px; height:32px; border-radius:8px; background:{% cycle 'rgba(6,182,212,0.6)' 'rgba(6,182,212,0.4)' 'rgba(6,182,212,0.25)' 'rgba(6,182,212,0.15)' 'rgba(6,182,212,0.1)' 'rgba(6,182,212,0.08)' 'rgba(6,182,212,0.05)' 'rgba(6,182,212,0.03)' %}; display:flex; align-items:center; justify-content:center; font-size:0.8rem; cursor:pointer; transition:all 0.2s; border:1px solid rgba(6,182,212,0.2);">💧</div>
+                    {% endfor %}
+                </div>
+                <div style="font-size:0.72rem; color:var(--text-muted); margin-top:0.5rem;">Click to track your cups!</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Diet Plan History -->
+{% if diet_plans.count > 1 %}
+<div class="glass-card p-4 fade-in fade-in-delay-2">
+    <h6 style="font-weight:700; margin-bottom:1rem; text-transform:uppercase; font-size:0.78rem; letter-spacing:1px; color:var(--text-muted);">Previous Diet Plans</h6>
+    <div class="table-responsive">
+        <table class="table table-borderless">
+            <thead><tr><th>Date</th><th>Calories</th><th>Protein</th><th>Water</th></tr></thead>
+            <tbody>
+                {% for plan in diet_plans|slice:"1:6" %}
+                <tr>
+                    <td>{{ plan.created_at|date:"M d, Y" }}</td>
+                    <td style="color:var(--danger);">{{ plan.calories }} kcal</td>
+                    <td style="color:var(--primary-light);">{{ plan.protein_goal }}g</td>
+                    <td style="color:var(--info);">{{ plan.water_intake }}L</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="glass-card p-5 text-center">
+    <div style="font-size:4rem; margin-bottom:1rem;">🥗</div>
+    <h4 style="font-weight:700;">No Diet Plan Yet</h4>
+    <p style="color:var(--text-muted);">Your trainer hasn't assigned a diet plan yet. Check back soon!</p>
+    <a href="{% url 'member_dashboard' %}" class="btn btn-primary mt-2">Back to Dashboard</a>
+</div>
+{% endif %}
+
+{% endblock %}

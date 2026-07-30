@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Enquiry Management</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+            <h3 class="mb-0">
+                <i class="fa-solid fa-envelope"></i>
+                Enquiry Management
+            </h3>
+
+            <span class="badge bg-light text-dark fs-6">
+                Total : {{ enquiries|length }}
+            </span>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover table-bordered align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th width="60">#</th>
+
+                            <th>Name</th>
+
+                            <th>Email</th>
+
+                            <th>Mobile</th>
+
+                            <th width="250">Message</th>
+
+                            <th>Created</th>
+
+                            <th width="120">Status</th>
+
+                            <th width="220">Action</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for enquiry in enquiries %}
+
+                        <tr>
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+                            <td>
+
+                                <strong>
+                                    {{ enquiry.name }}
+                                </strong>
+
+                            </td>
+
+                            <td>
+
+                                {{ enquiry.email }}
+
+                            </td>
+
+                            <td>
+
+                                {{ enquiry.mobile }}
+
+                            </td>
+
+                            <td>
+
+                                <div style="max-width:250px; white-space:normal;">
+                                    {{ enquiry.message }}
+                                </div>
+
+                            </td>
+
+                            <td>
+
+                                {{ enquiry.created_at|date:"d M Y" }}
+
+                                <br>
+
+                                <small class="text-muted">
+                                    {{ enquiry.created_at|time:"h:i A" }}
+                                </small>
+
+                            </td>
+
+                            <td>
+
+                                {% if enquiry.status == "NEW" %}
+
+                                    <span class="badge bg-danger">
+                                        NEW
+                                    </span>
+
+                                {% elif enquiry.status == "SEEN" %}
+
+                                    <span class="badge bg-warning text-dark">
+                                        SEEN
+                                    </span>
+
+                                {% elif enquiry.status == "IN_PROGRESS" %}
+
+                                    <span class="badge bg-info text-dark">
+                                        IN PROGRESS
+                                    </span>
+
+                                {% elif enquiry.status == "RESOLVED" %}
+
+                                    <span class="badge bg-success">
+                                        RESOLVED
+                                    </span>
+
+                                {% elif enquiry.status == "REJECTED" %}
+
+                                    <span class="badge bg-secondary">
+                                        REJECTED
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                <form method="POST"
+                                      action="{% url 'admin_enquiry_update_status' enquiry.id %}">
+
+                                    {% csrf_token %}
+
+                                    <div class="input-group">
+
+                                        <select
+                                            name="status"
+                                            class="form-select form-select-sm">
+
+                                            <option value="NEW"
+                                                {% if enquiry.status == "NEW" %}selected{% endif %}>
+                                                NEW
+                                            </option>
+
+                                            <option value="SEEN"
+                                                {% if enquiry.status == "SEEN" %}selected{% endif %}>
+                                                SEEN
+                                            </option>
+
+                                            <option value="IN_PROGRESS"
+                                                {% if enquiry.status == "IN_PROGRESS" %}selected{% endif %}>
+                                                IN PROGRESS
+                                            </option>
+
+                                            <option value="RESOLVED"
+                                                {% if enquiry.status == "RESOLVED" %}selected{% endif %}>
+                                                RESOLVED
+                                            </option>
+
+                                            <option value="REJECTED"
+                                                {% if enquiry.status == "REJECTED" %}selected{% endif %}>
+                                                REJECTED
+                                            </option>
+
+                                        </select>
+
+                                        <button
+                                            class="btn btn-primary btn-sm"
+                                            type="submit">
+
+                                            <i class="fa-solid fa-check"></i>
+
+                                        </button>
+
+                                    </div>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="8" class="text-center py-5">
+
+                                <i class="fa-solid fa-inbox fa-3x text-secondary mb-3"></i>
+
+                                <h5>No Enquiries Found</h5>
+
+                                <p class="text-muted">
+
+                                    There are currently no enquiries available.
+
+                                </p>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

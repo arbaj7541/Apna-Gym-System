@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Trainer Management</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card shadow border-0">
+
+        <!-- Header -->
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+            <h3 class="mb-0">
+                <i class="fa-solid fa-user-tie"></i>
+                Trainer Management
+            </h3>
+
+            <a href="{% url 'admin_trainer_add' %}" class="btn btn-light">
+                <i class="fa-solid fa-user-plus"></i>
+                Add Trainer
+            </a>
+
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover table-bordered align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th width="60">#</th>
+
+                            <th>Trainer Name</th>
+
+                            <th>Mobile</th>
+
+                            <th>Specialization</th>
+
+                            <th>Shift Timing</th>
+
+                            <th width="180">Actions</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for trainer in trainers %}
+
+                        <tr>
+
+                            <td>{{ forloop.counter }}</td>
+
+                            <td>
+
+                                <strong>{{ trainer.name }}</strong>
+
+                            </td>
+
+                            <td>
+
+                                {{ trainer.mobile }}
+
+                            </td>
+
+                            <td>
+
+                                <span class="badge bg-info">
+
+                                    {{ trainer.speciallization }}
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                {{ trainer.shift_timings|time:"h:i A" }}
+
+                            </td>
+
+                            <td>
+
+                                <a href="{% url 'admin_trainer_edit' trainer.id %}"
+                                   class="btn btn-warning btn-sm">
+
+                                    <i class="fa-solid fa-pen"></i>
+
+                                    Edit
+
+                                </a>
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'admin_trainer_delete' trainer.id %}"
+                                    class="d-inline">
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Are you sure you want to delete this trainer?')">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                        Delete
+
+                                    </button>
+
+                                </form>
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="6" class="text-center py-5">
+
+                                <i class="fa-solid fa-user-tie fa-3x text-secondary mb-3"></i>
+
+                                <h5>No Trainers Found</h5>
+
+                                <p class="text-muted">
+
+                                    No trainer records are available.
+
+                                </p>
+
+                                <a href="{% url 'admin_trainer_add' %}"
+                                   class="btn btn-primary">
+
+                                    <i class="fa-solid fa-user-plus"></i>
+
+                                    Add First Trainer
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

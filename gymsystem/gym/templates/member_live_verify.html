@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+<title>Member Verification | FitPro GYM</title>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 500px; border-radius: 20px; overflow: hidden;">
+        
+        <div class="bg-primary text-white text-center py-4">
+            <i class="fa-solid fa-camera-viewfinder fa-3x mb-2"></i>
+            <h3 class="mb-0 fw-bold">Live Verification</h3>
+            <p class="mb-0 opacity-75">Please take a photo to continue</p>
+        </div>
+
+        <div class="card-body p-4 text-center">
+            
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show text-start" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="mb-4">
+                <div class="camera-container border rounded overflow-hidden mb-3 bg-dark mx-auto" style="width: 100%; max-width: 400px; height: 300px; position: relative;">
+                    <video id="camera" autoplay playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
+                    <canvas id="canvas" style="display: none;"></canvas>
+                    <img id="preview" style="display: none; width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0;" />
+                </div>
+            </div>
+
+            <form method="POST" id="verificationForm">
+                {% csrf_token %}
+                <input type="hidden" name="image_data" id="image_data">
+
+                <div class="d-flex gap-2 justify-content-center mb-3">
+                    <button type="button" id="captureBtn" class="btn btn-primary btn-lg px-4" style="border-radius: 12px;">
+                        <i class="fa-solid fa-camera me-2"></i> Capture
+                    </button>
+                    <button type="button" id="retakeBtn" class="btn btn-warning btn-lg px-4" style="border-radius: 12px; display: none;">
+                        <i class="fa-solid fa-rotate-right me-2"></i> Retake
+                    </button>
+                    <button type="submit" id="submitBtn" class="btn btn-success btn-lg px-4" style="border-radius: 12px; display: none;">
+                        <i class="fa-solid fa-check me-2"></i> Verify
+                    </button>
+                </div>
+            </form>
+
+            <a href="{% url 'member_login' %}" class="text-decoration-none text-muted">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Login
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const video = document.getElementById('camera');
+    const canvas = document.getElementById('canvas');
+    const preview = document.getElementById('preview');
+    const captureBtn = document.getElementById('captureBtn');
+    const retakeBtn = document.getElementById('retakeBtn');
+    const submitBtn = document.getElementById('submitBtn');
+    const imageDataInput = document.getElementById('image_data');
+    let stream;
+
+    async function startCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            video.srcObject = stream;
+        } catch (err) {
+            alert("Error accessing camera: " + err.message + "\nPlease allow camera permissions.");
+        }
+    }
+
+    startCamera();
+
+    captureBtn.addEventListener('click', () => {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const context = canvas.getContext('2d');
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        imageDataInput.value = dataUrl;
+        preview.src = dataUrl;
+        
+        video.style.display = 'none';
+        preview.style.display = 'block';
+        
+        captureBtn.style.display = 'none';
+        retakeBtn.style.display = 'inline-block';
+        submitBtn.style.display = 'inline-block';
+    });
+
+    retakeBtn.addEventListener('click', () => {
+        video.style.display = 'block';
+        preview.style.display = 'none';
+        imageDataInput.value = '';
+        
+        captureBtn.style.display = 'inline-block';
+        retakeBtn.style.display = 'none';
+        submitBtn.style.display = 'none';
+    });
+    
+    // Stop camera when leaving page
+    window.addEventListener('beforeunload', () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Attendance List</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+            <h3 class="mb-0">
+                <i class="fa-solid fa-calendar-check"></i>
+                Attendance Management
+            </h3>
+
+            <a href="{% url 'admin_attendance_add' %}" class="btn btn-light">
+                <i class="fa-solid fa-plus"></i>
+                Mark Attendance
+            </a>
+
+        </div>
+
+        <div class="card-body">
+
+            <form method="GET" class="row g-3 mb-4">
+
+                <div class="col-md-4">
+
+                    <label class="form-label fw-bold">
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        name="date"
+                        class="form-control"
+                        value="{{ date }}">
+
+                </div>
+
+                <div class="col-md-5">
+
+                    <label class="form-label fw-bold">
+                        Member
+                    </label>
+
+                    <select name="member_id" class="form-select">
+
+                        <option value="">All Members</option>
+
+                        {% for member in members %}
+
+                        <option
+                            value="{{ member.id }}"
+                            {% if member_id == member.id|stringformat:"s" %}
+                                selected
+                            {% endif %}>
+
+                            {{ member.full_name }} ({{ member.user.username }})
+
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3 d-flex align-items-end">
+
+                    <button class="btn btn-primary me-2 w-100">
+
+                        <i class="fa-solid fa-filter"></i>
+                        Filter
+
+                    </button>
+
+                    <a href="{% url 'admin_attendence_list' %}"
+                       class="btn btn-secondary">
+
+                        <i class="fa-solid fa-rotate"></i>
+
+                    </a>
+
+                </div>
+
+            </form>
+
+            <div class="table-responsive">
+
+                <table class="table table-hover table-bordered align-middle">
+
+                    <thead class="table-dark">
+
+                        <tr>
+
+                            <th width="70">#</th>
+
+                            <th>
+                                <i class="fa-solid fa-user"></i>
+                                Member
+                            </th>
+
+                            <th>
+                                <i class="fa-solid fa-calendar"></i>
+                                Date
+                            </th>
+
+                            <th>
+                                <i class="fa-solid fa-clock"></i>
+                                Time In
+                            </th>
+
+                            <th width="140">
+                                Status
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for attendance in attendances %}
+
+                        <tr>
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+                            <td>
+
+                                <strong>
+                                    {{ attendance.member.full_name }}
+                                </strong>
+
+                                <br>
+
+                                <small class="text-muted">
+                                    {{ attendance.member.user.username }}
+                                </small>
+
+                            </td>
+
+                            <td>
+                                {{ attendance.date }}
+                            </td>
+
+                            <td>
+                                {{ attendance.time_in }}
+                            </td>
+
+                            <td>
+
+                                {% if attendance.status == "PRESENT" %}
+
+                                    <span class="badge bg-success">
+                                        Present
+                                    </span>
+
+                                {% elif attendance.status == "ABSENT" %}
+
+                                    <span class="badge bg-danger">
+                                        Absent
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge bg-secondary">
+                                        {{ attendance.status }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                        </tr>
+
+                        {% empty %}
+
+                        <tr>
+
+                            <td colspan="5" class="text-center py-5">
+
+                                <i class="fa-solid fa-circle-info fa-3x text-secondary mb-3"></i>
+
+                                <h5>No Attendance Found</h5>
+
+                                <p class="text-muted">
+
+                                    No attendance records are available for the selected filter.
+
+                                </p>
+
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

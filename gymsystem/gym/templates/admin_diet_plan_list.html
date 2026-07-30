@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}<title>Diet Plans | FitPro GYM</title>{% endblock %}
+{% block page_title %}Diet Plans{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-apple-whole me-2" style="color:var(--success);"></i>Diet Plans</h1>
+        <nav aria-label="breadcrumb"><ol class="breadcrumb mb-0"><li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li><li class="breadcrumb-item active">Diet Plans</li></ol></nav>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+        <form method="get" class="d-flex gap-2">
+            <select name="member_id" class="form-select form-select-sm" style="width:auto;" onchange="this.form.submit()">
+                <option value="">All Members</option>
+                {% for m in members %}<option value="{{ m.id }}" {% if selected_member_id == m.id|stringformat:"s" %}selected{% endif %}>{{ m.full_name }}</option>{% endfor %}
+            </select>
+        </form>
+        <a href="{% url 'admin_diet_plan_add' %}" class="btn btn-primary btn-sm"><i class="fas fa-plus me-1"></i>Add Diet Plan</a>
+    </div>
+</div>
+
+<div class="glass-card p-4 fade-in">
+    {% if diet_plans %}
+    <div class="table-responsive">
+        <table class="table">
+            <thead><tr><th>Member</th><th>Calories</th><th>Protein</th><th>Water</th><th>Breakfast</th><th>Lunch</th><th>Dinner</th><th>Date</th><th>Actions</th></tr></thead>
+            <tbody>
+                {% for plan in diet_plans %}
+                <tr>
+                    <td style="font-weight:600;">{{ plan.member.full_name }}</td>
+                    <td style="color:var(--danger); font-weight:600;">{{ plan.calories }} kcal</td>
+                    <td style="color:var(--primary-light);">{{ plan.protein_goal }}g</td>
+                    <td style="color:var(--info);">{{ plan.water_intake }}L</td>
+                    <td style="max-width:150px; font-size:0.82rem; color:var(--text-muted);">{{ plan.breakfast|truncatewords:6 }}</td>
+                    <td style="max-width:150px; font-size:0.82rem; color:var(--text-muted);">{{ plan.lunch|truncatewords:6 }}</td>
+                    <td style="max-width:150px; font-size:0.82rem; color:var(--text-muted);">{{ plan.dinner|truncatewords:6 }}</td>
+                    <td style="font-size:0.82rem;">{{ plan.created_at|date:"d M Y" }}</td>
+                    <td>
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'admin_diet_plan_edit' plan.id %}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>
+                            <button class="btn btn-danger btn-sm" onclick="confirmDelete('{% url 'admin_diet_plan_delete' plan.id %}')"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fas fa-utensils fa-3x" style="color:var(--text-muted); margin-bottom:1rem;"></i>
+        <p style="color:var(--text-muted);">No diet plans found.</p>
+        <a href="{% url 'admin_diet_plan_add' %}" class="btn btn-primary btn-sm">Add First Diet Plan</a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Confirm Delete</h5></div>
+        <div class="modal-body"><p style="color:var(--text-muted);">Are you sure you want to delete this diet plan?</p></div>
+        <div class="modal-footer">
+            <button class="btn btn-sm" style="background:rgba(255,255,255,0.07);" data-bs-dismiss="modal">Cancel</button>
+            <form id="deleteForm" method="post"><{% csrf_token %}<button class="btn btn-danger btn-sm" type="submit">Delete</button></form>
+        </div>
+    </div></div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+function confirmDelete(url) {
+    document.getElementById('deleteForm').action = url;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+</script>
+{% endblock %}

@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}<title>Member Management | FitPro GYM</title>{% endblock %}
+{% block page_title %}Member Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-users me-2" style="color:var(--primary-light);"></i>Member Management</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'admin_dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Members</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'export_members_csv' %}" class="btn btn-success btn-sm">
+            <i class="fas fa-file-csv me-1"></i> Export CSV Report
+        </a>
+        <a href="{% url 'admin_member_add' %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-user-plus me-1"></i> Add Member
+        </a>
+    </div>
+</div>
+
+<div class="glass-card p-4 fade-in">
+    <!-- Filter & Search Bar -->
+    <form method="GET" class="row g-3 mb-4">
+        <div class="col-md-7">
+            <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-search"></i></span>
+                <input type="text" name="search" class="form-control" placeholder="Search by name, username or mobile..." value="{{ search_query }}">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">All Statuses</option>
+                <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active Membership</option>
+                <option value="expired" {% if status_filter == 'expired' %}selected{% endif %}>Expired Membership</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100"><i class="fas fa-filter me-1"></i> Filter</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Goal & BMI</th>
+                    <th>Plan</th>
+                    <th>Trainer</th>
+                    <th>Joining Date</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                <tr>
+                    <td>
+                        <div style="font-weight:700;">{{ member.full_name }}</div>
+                        <div style="font-size:0.78rem; color:var(--text-muted);">@{{ member.user.username }} · {{ member.mobile }}</div>
+                    </td>
+                    <td>
+                        <div style="font-size:0.85rem; font-weight:600; color:var(--accent);">{{ member.get_fitness_goal_display }}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">BMI: {{ member.bmi|default:"N/A" }} ({{ member.bmi_category }})</div>
+                    </td>
+                    <td>
+                        {% if member.plan %}
+                            <span class="badge" style="background:rgba(124,58,237,0.15); color:var(--primary-light);">{{ member.plan.name }}</span>
+                        {% else %}
+                            <span class="badge" style="background:rgba(255,255,255,0.07); color:var(--text-muted);">No Plan</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-size:0.85rem;">{{ member.trainer.name|default:"Unassigned" }}</td>
+                    <td style="font-size:0.82rem; color:var(--text-muted);">{{ member.joining_date|date:"d M Y" }}</td>
+                    <td>
+                        {% if member.membership_status == "Active" %}
+                            <span class="badge badge-active">Active</span>
+                        {% else %}
+                            <span class="badge badge-expired">{{ member.membership_status }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-1">
+                            <a href="{% url 'member_card_printable' member.id %}" target="_blank" class="btn btn-sm btn-outline-primary" title="Print QR Membership Card">
+                                <i class="fas fa-id-card"></i> Card
+                            </a>
+                            <a href="{% url 'admin_member_edit' member.id %}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <form method="POST" action="{% url 'admin_member_delete' member.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this member account?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="text-center py-5">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <h5>No Members Found</h5>
+                        <a href="{% url 'admin_member_add' %}" class="btn btn-primary btn-sm mt-2">Add Member</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

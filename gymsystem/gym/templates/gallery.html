@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}<title>Gym Gallery & Transformation Stories | FitPro GYM</title>{% endblock %}
+{% block page_title %}Gym Media & Transformations{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-images me-2" style="color:var(--primary-light);"></i>Media & Transformations Gallery</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+                <li class="breadcrumb-item active">Gallery</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="?category=" class="btn btn-sm {% if not category_filter %}btn-primary{% else %}btn-outline-primary{% endif %}">All</a>
+        <a href="?category=GYM_PHOTO" class="btn btn-sm {% if category_filter == 'GYM_PHOTO' %}btn-primary{% else %}btn-outline-primary{% endif %}">Infrastructure</a>
+        <a href="?category=TRANSFORMATION" class="btn btn-sm {% if category_filter == 'TRANSFORMATION' %}btn-primary{% else %}btn-outline-primary{% endif %}">Transformations</a>
+        <a href="?category=EVENT" class="btn btn-sm {% if category_filter == 'EVENT' %}btn-primary{% else %}btn-outline-primary{% endif %}">Events</a>
+        {% if user.role == "ADMIN" %}
+        <button class="btn btn-success btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#addGalleryModal">
+            <i class="fas fa-plus me-1"></i> Add Media
+        </button>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4 fade-in">
+    {% for item in items %}
+    <div class="col-md-4 col-lg-3">
+        <div class="glass-card overflow-hidden h-100">
+            {% if item.image %}
+                <img src="{{ item.image.url }}" alt="{{ item.title }}" style="width:100%; height:200px; object-fit:cover;">
+            {% else %}
+                <div style="height:200px; background:linear-gradient(135deg,rgba(124,58,237,0.2),rgba(245,158,11,0.1)); display:flex; align-items:center; justify-content:center; font-size:3rem;">📷</div>
+            {% endif %}
+            <div class="p-3">
+                <span class="badge badge-active mb-1" style="font-size:0.65rem;">{{ item.get_category_display }}</span>
+                <h6 style="font-weight:700; margin:0 0 0.25rem;">{{ item.title }}</h6>
+                {% if item.description %}<p style="font-size:0.8rem; color:var(--text-muted); margin:0;">{{ item.description }}</p>{% endif %}
+                {% if item.video_url %}
+                <a href="{{ item.video_url }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2 w-100"><i class="fab fa-youtube me-1"></i>Watch Video</a>
+                {% endif %}
+                {% if user.role == "ADMIN" %}
+                <form action="{% url 'gallery_delete' item.id %}" method="post" class="mt-2 text-end">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete item?')"><i class="fas fa-trash"></i></button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+        <i class="fas fa-images fa-3x" style="color:var(--text-muted); margin-bottom:1rem;"></i>
+        <p style="color:var(--text-muted);">No media uploaded to gallery yet.</p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Modal for Upload -->
+{% if user.role == "ADMIN" %}
+<div class="modal fade" id="addGalleryModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title">Upload Gallery Media</h5><button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:invert(1);"></button></div>
+        <form action="{% url 'gallery_add' %}" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Title *</label>
+                    <input type="text" name="title" class="form-control" placeholder="Item Title" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Category</label>
+                    <select name="category" class="form-select">
+                        <option value="GYM_PHOTO">📷 Gym Infrastructure</option>
+                        <option value="TRANSFORMATION">💪 Member Transformation</option>
+                        <option value="EVENT">🎉 Gym Event</option>
+                        <option value="VIDEO">🎥 Video Highlight</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Image File</label>
+                    <input type="file" name="image" class="form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Video URL (Optional)</label>
+                    <input type="url" name="video_url" class="form-control" placeholder="https://youtube.com/...">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control" rows="2" placeholder="Brief caption..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Upload Media</button>
+            </div>
+        </form>
+    </div></div>
+</div>
+{% endif %}
+{% endblock %}

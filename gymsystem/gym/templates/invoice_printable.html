@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Invoice - {{ payment.invoice_no }}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; color: #1e293b; padding: 40px; margin: 0; }
+        .invoice-box { max-width: 700px; margin: auto; padding: 40px; border: 1px solid #e2e8f0; border-radius: 16px; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .top { display: flex; justify-content: space-between; border-bottom: 2px solid #7c3aed; padding-bottom: 20px; margin-bottom: 30px; }
+        .title { font-size: 1.8rem; font-weight: 800; color: #7c3aed; }
+        .inv-details { text-align: right; font-size: 0.85rem; color: #64748b; }
+        .meta-grid { display: flex; justify-content: space-between; margin-bottom: 30px; }
+        .meta-box h4 { margin: 0 0 5px; color: #64748b; font-size: 0.8rem; text-transform: uppercase; }
+        .table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        .table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+        .table th { background: #f1f5f9; color: #475569; font-weight: 600; }
+        .total-row td { font-weight: 800; font-size: 1.1rem; color: #7c3aed; border-top: 2px solid #7c3aed; }
+        .no-print { text-align: center; margin-bottom: 20px; }
+        .btn-print { background: #7c3aed; color: white; border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; }
+        @media print { .no-print { display: none; } body { padding: 0; background: white; } .invoice-box { border: none; shadow: none; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <button onclick="window.print()" class="btn-print">🖨️ Print / Download PDF Receipt</button>
+</div>
+
+<div class="invoice-box">
+    <div class="top">
+        <div>
+            <div class="title">🏋️ FitPro GYM</div>
+            <div style="font-size:0.85rem; color:#64748b;">123 Fitness Street, Delhi, India</div>
+            <div style="font-size:0.85rem; color:#64748b;">GSTIN: 07AAAAA0000A1Z5</div>
+        </div>
+        <div class="inv-details">
+            <h2 style="margin:0; color:#1e293b;">INVOICE</h2>
+            <div><strong>No:</strong> {{ payment.invoice_no }}</div>
+            <div><strong>Date:</strong> {{ payment.payment_date }}</div>
+            <div><strong>Status:</strong> <span style="color:#10b981; font-weight:700;">{{ payment.status }}</span></div>
+        </div>
+    </div>
+
+    <div class="meta-grid">
+        <div class="meta-box">
+            <h4>Billed To:</h4>
+            <div style="font-weight:700; font-size:1.1rem;">{{ payment.member.full_name }}</div>
+            <div style="font-size:0.85rem; color:#64748b;">Mobile: {{ payment.member.mobile }}</div>
+            <div style="font-size:0.85rem; color:#64748b;">Plan: {{ payment.plan.name|default:"General Membership" }}</div>
+        </div>
+        <div class="meta-box" style="text-align:right;">
+            <h4>Payment Details:</h4>
+            <div style="font-size:0.85rem; color:#64748b;">Mode: <strong>{{ payment.mode }}</strong></div>
+            {% if payment.transaction_id %}<div style="font-size:0.85rem; color:#64748b;">Txn ID: <strong>{{ payment.transaction_id }}</strong></div>{% endif %}
+        </div>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Membership Subscription Fee ({{ payment.plan.name|default:"Standard" }})</td>
+                <td>₹{{ payment.amount }}</td>
+            </tr>
+            <tr>
+                <td>GST (18%)</td>
+                <td>+₹{{ payment.gst }}</td>
+            </tr>
+            <tr>
+                <td>Discount Applied</td>
+                <td style="color:#10b981;">-₹{{ payment.discount }}</td>
+            </tr>
+            <tr class="total-row">
+                <td>Total Paid Amount</td>
+                <td>₹{{ payment.total_amount }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div style="text-align:center; font-size:0.8rem; color:#94a3b8; margin-top:40px;">
+        Thank you for training with FitPro GYM! This is a computer-generated invoice.
+    </div>
+</div>
+
+</body>
+</html>

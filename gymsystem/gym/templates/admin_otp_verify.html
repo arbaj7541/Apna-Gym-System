@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>Admin Login - 2FA Verification | FitPro GYM</title>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg border-0" style="width: 100%; max-width: 450px; border-radius: 20px; overflow: hidden;">
+        
+        <!-- Header -->
+        <div class="bg-primary text-white text-center py-4">
+            <i class="fa-solid fa-shield-halved fa-3x mb-2"></i>
+            <h3 class="mb-0 fw-bold">Admin Verification</h3>
+            <p class="mb-0 opacity-75">Two-Factor Authentication</p>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+                <p class="text-muted mb-1">We've sent a 6-digit OTP to your registered admin email.</p>
+                <small class="text-primary fw-bold">Please enter it below to access the dashboard.</small>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <i class="fa-solid {% if message.tags == 'success' %}fa-check-circle{% else %}fa-circle-exclamation{% endif %} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label class="form-label text-muted fw-bold">Enter OTP Code</label>
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="fa-solid fa-key text-primary"></i>
+                        </span>
+                        <input type="text" name="otp" class="form-control bg-light border-start-0" 
+                               placeholder="123456" required maxlength="6" pattern="\d{6}"
+                               style="letter-spacing: 5px; font-size: 1.5rem; text-align: center;">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold mb-3" style="border-radius: 12px;">
+                    <i class="fa-solid fa-unlock-keyhole me-2"></i> Verify & Login
+                </button>
+
+                <div class="text-center">
+                    <a href="{% url 'admin_login' %}" class="text-decoration-none text-muted">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Back to Login
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

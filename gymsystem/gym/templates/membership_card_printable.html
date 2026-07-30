@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Membership Card - {{ member.full_name }}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f0f1a; color: white; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
+        .card-container {
+            width: 450px;
+            background: linear-gradient(135deg, #13132a 0%, #1a0a3a 100%);
+            border: 2px solid #7c3aed;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            position: relative;
+            overflow: hidden;
+        }
+        .card-header { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px; }
+        .brand { font-size: 1.4rem; font-weight: 800; color: #a855f7; }
+        .tier-badge { background: #f59e0b; color: #1a1a1a; font-weight: 800; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; text-transform: uppercase; }
+        .card-body { display: flex; gap: 20px; align-items: center; }
+        .photo-wrap { width: 100px; height: 100px; border-radius: 16px; border: 2px solid #a855f7; overflow: hidden; background: #1f1f3a; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 700; flex-shrink: 0; }
+        .photo-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .member-info h2 { font-size: 1.3rem; margin: 0 0 5px; font-weight: 700; }
+        .info-row { font-size: 0.85rem; color: #94a3b8; margin: 3px 0; }
+        .qr-section { margin-top: 20px; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 12px; display: flex; align-items: center; justify-content: space-between; }
+        .qr-img { width: 80px; height: 80px; background: white; padding: 4px; border-radius: 8px; }
+        .no-print { position: fixed; top: 20px; right: 20px; }
+        .btn-print { background: #7c3aed; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1rem; }
+        @media print { .no-print { display: none; } body { background: white; } }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <button onclick="window.print()" class="btn-print">🖨️ Print Membership Card</button>
+</div>
+
+<div class="card-container">
+    <div class="card-header">
+        <div class="brand">🏋️ FitPro GYM</div>
+        <div class="tier-badge">{{ member.plan.name|default:"MEMBER" }}</div>
+    </div>
+    <div class="card-body">
+        <div class="photo-wrap">
+            {% if member.profile_photo %}
+                <img src="{{ member.profile_photo.url }}" alt="{{ member.full_name }}">
+            {% else %}
+                {{ member.full_name|slice:":1" }}
+            {% endif %}
+        </div>
+        <div class="member-info">
+            <h2>{{ member.full_name }}</h2>
+            <div class="info-row"><strong>ID:</strong> #{{ member.id }}</div>
+            <div class="info-row"><strong>Mobile:</strong> {{ member.mobile }}</div>
+            <div class="info-row"><strong>Joined:</strong> {{ member.joining_date }}</div>
+            <div class="info-row"><strong>Expires:</strong> {{ member.membership_end|default:"N/A" }}</div>
+        </div>
+    </div>
+    <div class="qr-section">
+        <div>
+            <div style="font-size:0.8rem; font-weight:700;">SCAN FOR CHECK-IN</div>
+            <div style="font-size:0.7rem; color:#94a3b8;">Show at front desk counter</div>
+        </div>
+        {% if qr_code_uri %}
+            <img src="{{ qr_code_uri }}" class="qr-img" alt="QR Code">
+        {% endif %}
+    </div>
+</div>
+
+</body>
+</html>

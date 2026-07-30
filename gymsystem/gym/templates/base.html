@@ -1,0 +1,584 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FitPro GYM Management System - Premium AI-Powered Fitness Platform">
+    {% block title %}<title>FitPro GYM</title>{% endblock %}
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CSS Local -->
+    <link href="{% static 'gym/css/bootstrap.min.css' %}" rel="stylesheet">
+    
+    <!-- FontAwesome CSS Local -->
+    <link rel="stylesheet" href="{% static 'gym/css/all.min.css' %}">
+
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-light: #a855f7;
+            --primary-dark: #5b21b6;
+            --accent: #f59e0b;
+            --accent-light: #fbbf24;
+            --success: #10b981;
+            --danger: #ef4444;
+            --info: #06b6d4;
+            --dark-bg: #0f0f1a;
+            --sidebar-bg: #13132a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --sidebar-width: 260px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            position: fixed;
+            top: 0; left: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #0d0d24 100%);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: transform 0.3s ease;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
+
+        .sidebar-logo {
+            padding: 1.5rem 1.25rem;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(245,158,11,0.1));
+        }
+        .sidebar-logo .logo-text {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .sidebar-logo .logo-sub {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .sidebar-section-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            padding: 1rem 1.25rem 0.4rem;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.65rem 1.25rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            transition: all 0.2s ease;
+            border-radius: 0 8px 8px 0;
+            margin: 1px 0.5rem 1px 0;
+        }
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            color: var(--text-main);
+            background: rgba(124, 58, 237, 0.15);
+            border-left-color: var(--primary-light);
+        }
+        .sidebar-nav a .nav-icon {
+            width: 20px;
+            font-size: 0.95rem;
+            text-align: center;
+            color: var(--primary-light);
+            flex-shrink: 0;
+        }
+        .sidebar-nav a:hover .nav-icon,
+        .sidebar-nav a.active .nav-icon {
+            color: var(--accent);
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-width);
+            right: 0;
+            height: 64px;
+            background: rgba(15, 15, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            padding: 0 1.5rem;
+            gap: 1rem;
+        }
+
+        .topbar-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .topbar-search {
+            position: relative;
+            max-width: 320px;
+            width: 100%;
+        }
+        .topbar-search input {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            color: var(--text-main);
+            padding: 0.4rem 1rem 0.4rem 2.2rem;
+            font-size: 0.85rem;
+        }
+        .topbar-search input:focus {
+            background: rgba(255,255,255,0.08);
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.2);
+        }
+        .topbar-search .search-icon {
+            position: absolute;
+            left: 0.8rem; top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .topbar-avatar {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            margin-top: 64px;
+            min-height: calc(100vh - 64px);
+            padding: 1.5rem;
+        }
+
+        /* ── PUBLIC NAVBAR ── */
+        .public-navbar {
+            background: rgba(15, 15, 26, 0.97);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 0;
+        }
+        .public-navbar .navbar-brand {
+            font-weight: 800;
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, var(--primary-light), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .public-navbar .nav-link {
+            color: var(--text-muted) !important;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .public-navbar .nav-link:hover { color: var(--text-main) !important; }
+        .public-navbar .btn-nav-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.45rem 1.1rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+
+        /* ── CARDS & UTILS ── */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .glass-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(124, 58, 237, 0.15);
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            opacity: 0.1;
+            transform: translate(20px, -20px);
+        }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.3); }
+        .stat-value { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+        .stat-label { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
+        .stat-icon { font-size: 1.8rem; opacity: 0.9; }
+
+        .alert {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-main);
+        }
+        .alert-success { border-color: rgba(16,185,129,0.4); background: rgba(16,185,129,0.1); }
+        .alert-danger { border-color: rgba(239,68,68,0.4); background: rgba(239,68,68,0.1); }
+        .alert-warning { border-color: rgba(245,158,11,0.4); background: rgba(245,158,11,0.1); }
+        .alert-info { border-color: rgba(6,182,212,0.4); background: rgba(6,182,212,0.1); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none; border-radius: 8px; font-weight: 600; transition: all 0.3s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px); box-shadow: 0 6px 20px rgba(124,58,237,0.4);
+            background: linear-gradient(135deg, var(--primary-light), var(--primary));
+        }
+        .btn-success { background: linear-gradient(135deg, #059669, #10b981); border: none; border-radius: 8px; font-weight: 600; }
+        .btn-warning { background: linear-gradient(135deg, #d97706, var(--accent)); border: none; border-radius: 8px; font-weight: 600; color: #1a1a1a; }
+        .btn-danger { background: linear-gradient(135deg, #b91c1c, var(--danger)); border: none; border-radius: 8px; font-weight: 600; }
+
+        .table { color: var(--text-main); border-color: var(--border); }
+        .table thead th {
+            background: rgba(124,58,237,0.15); color: var(--text-muted); font-size: 0.78rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 1px; border-color: var(--border); padding: 0.85rem 1rem;
+        }
+        .table tbody td { border-color: var(--border); padding: 0.85rem 1rem; vertical-align: middle; font-size: 0.9rem; }
+        .table tbody tr:hover { background: rgba(124,58,237,0.07); }
+
+        .form-control, .form-select {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 10px; color: var(--text-main); padding: 0.6rem 1rem;
+        }
+        .form-control:focus, .form-select:focus {
+            background: rgba(255,255,255,0.08); border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(124,58,237,0.2); color: var(--text-main);
+        }
+        .form-control::placeholder { color: rgba(255,255,255,0.4); }
+        .form-select option { background: #13132a; color: var(--text-main); }
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #1a1a2e inset !important;
+            -webkit-text-fill-color: var(--text-main) !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
+        /* Modals */
+        .modal-content {
+            background: #13132a;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            color: var(--text-main);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .modal-header { border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+        .modal-footer { border-top: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+        .modal-title { font-weight: 700; }
+
+        .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); }
+        .page-header h1, .page-header h2 { font-weight: 700; font-size: 1.5rem; margin: 0; }
+
+        .badge-active { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+        .badge-expired { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+        .badge-paid { background: rgba(16,185,129,0.15); color: #10b981; border: 1px solid rgba(16,185,129,0.3); }
+        .badge-pending { background: rgba(245,158,11,0.15); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+        .badge-failed { background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3); }
+
+        .sidebar-toggle { display: none; background: none; border: none; color: var(--text-main); font-size: 1.25rem; cursor: pointer; }
+
+        @media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-toggle { display: block; }
+            .main-content { margin-left: 0; }
+            .topbar { left: 0; }
+            .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 999; }
+            .sidebar-overlay.open { display: block; }
+        }
+
+        .main-footer { background: rgba(255,255,255,0.03); border-top: 1px solid var(--border); padding: 1rem 1.5rem; font-size: 0.82rem; color: var(--text-muted); text-align: center; }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+{% if user.is_authenticated %}
+
+    <!-- ─── SIDEBAR ─── -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fas fa-dumbbell" style="color: var(--accent); font-size: 1.5rem;"></i>
+                <div>
+                    <div class="logo-text">FitPro GYM</div>
+                    <div class="logo-sub">Management System</div>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav py-2">
+
+            {% if user.role == "ADMIN" %}
+            <div class="sidebar-section-label">Main</div>
+            <a href="{% url 'admin_dashboard' %}" class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-gauge-high"></i></span> Dashboard
+            </a>
+            <a href="{% url 'admin_ai_insights' %}" class="{% if request.resolver_match.url_name == 'admin_ai_insights' %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-brain" style="color:var(--accent);"></i></span> AI Predictive Center
+            </a>
+
+            <div class="sidebar-section-label">Operations & Scanner</div>
+            <a href="{% url 'admin_qr_attendance' %}" class="{% if request.resolver_match.url_name == 'admin_qr_attendance' %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-qrcode" style="color:var(--success);"></i></span> QR Attendance Scanner
+            </a>
+            <a href="{% url 'admin_attendence_list' %}" class="{% if 'attendence' in request.resolver_match.url_name or 'attendance' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-calendar-check"></i></span> Attendance Logs
+            </a>
+
+            <div class="sidebar-section-label">People</div>
+            <a href="{% url 'admin_member_list' %}" class="{% if 'member' in request.resolver_match.url_name and 'dashboard' not in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-users"></i></span> Members
+            </a>
+            <a href="{% url 'admin_trainer_list' %}" class="{% if 'trainer' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-user-tie"></i></span> Trainers
+            </a>
+
+            <div class="sidebar-section-label">Finance & Plans</div>
+            <a href="{% url 'admin_payment_list' %}" class="{% if 'payment' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-money-bill-wave"></i></span> Payments
+            </a>
+            <a href="{% url 'admin_plans_list' %}" class="{% if 'plan' in request.resolver_match.url_name and 'workout' not in request.resolver_match.url_name and 'diet' not in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-id-card"></i></span> Membership Plans
+            </a>
+
+            <div class="sidebar-section-label">Fitness & Facilities</div>
+            <a href="{% url 'admin_equipment_list' %}" class="{% if 'equipment' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-dumbbell"></i></span> Equipment
+            </a>
+            <a href="{% url 'admin_workout_plan_list' %}" class="{% if 'workout' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-fire"></i></span> Workout Plans
+            </a>
+            <a href="{% url 'admin_diet_plan_list' %}" class="{% if 'diet' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-apple-whole"></i></span> Diet Plans
+            </a>
+
+            <div class="sidebar-section-label">Communication & Content</div>
+            <a href="{% url 'announcement_list' %}" class="{% if 'announcement' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-bullhorn"></i></span> Announcements & Offers
+            </a>
+            <a href="{% url 'gallery_view' %}" class="{% if 'gallery' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-images"></i></span> Gallery & Media
+            </a>
+            <a href="{% url 'admin_enquiry_list' %}" class="{% if 'enquiry' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-envelope"></i></span> Enquiries
+            </a>
+            <a href="{% url 'admin_notifications' %}" class="{% if 'notification' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-bell"></i></span> Notifications
+            </a>
+
+            {% elif user.role == "MEMBER" %}
+            <div class="sidebar-section-label">My Dashboard</div>
+            <a href="{% url 'member_dashboard' %}" class="{% if request.resolver_match.url_name == 'member_dashboard' %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-gauge-high"></i></span> Overview
+            </a>
+            <a href="{% url 'member_ai_recommendations' %}" class="{% if request.resolver_match.url_name == 'member_ai_recommendations' %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-brain" style="color:var(--accent);"></i></span> AI Fitness Advisor
+            </a>
+
+            <div class="sidebar-section-label">Fitness & Nutrition</div>
+            <a href="{% url 'member_my_workout' %}" class="{% if 'workout' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-fire"></i></span> My Workout Plan
+            </a>
+            <a href="{% url 'member_my_diet' %}" class="{% if 'diet' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-apple-whole"></i></span> My Diet Plan
+            </a>
+
+            <div class="sidebar-section-label">History & Payments</div>
+            <a href="{% url 'member_my_attendance' %}" class="{% if 'attendance' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-calendar-check"></i></span> Attendance History
+            </a>
+            <a href="{% url 'member_my_payments' %}" class="{% if 'payment' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-credit-card"></i></span> Payments & Receipts
+            </a>
+
+            <div class="sidebar-section-label">Community</div>
+            <a href="{% url 'announcement_list' %}" class="{% if 'announcement' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-bullhorn"></i></span> Gym Announcements
+            </a>
+            <a href="{% url 'gallery_view' %}" class="{% if 'gallery' in request.resolver_match.url_name %}active{% endif %}">
+                <span class="nav-icon"><i class="fas fa-images"></i></span> Gallery
+            </a>
+            {% endif %}
+
+            <div style="padding: 1.5rem 1.25rem 0.5rem;">
+                <a href="{% url 'logout' %}" class="btn btn-danger btn-sm w-100">
+                    <i class="fas fa-right-from-bracket me-2"></i>Logout
+                </a>
+            </div>
+
+        </nav>
+    </aside>
+
+    <!-- ─── TOPBAR ─── -->
+    <div class="topbar">
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="topbar-title">
+            {% block page_title %}FitPro GYM{% endblock %}
+        </div>
+
+        <!-- Global Search Everywhere Bar -->
+        <form action="{% url 'global_search' %}" method="get" class="topbar-search d-none d-md-block">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" name="q" placeholder="Search member, trainer, equipment..." value="{{ query }}">
+        </form>
+
+        <div class="d-flex align-items-center gap-3 ms-auto">
+            <div class="text-end d-none d-md-block">
+                <div style="font-size:0.85rem; font-weight:600;">{{ user.get_full_name|default:user.username }}</div>
+                <div style="font-size:0.72rem; color:var(--accent);">{{ user.role }}</div>
+            </div>
+            <div class="topbar-avatar">
+                {{ user.username|slice:":1"|upper }}
+            </div>
+        </div>
+    </div>
+
+{% else %}
+
+    <!-- ─── PUBLIC NAVBAR ─── -->
+    {% block navbar %}
+    <nav class="navbar navbar-expand-lg public-navbar sticky-top">
+        <div class="container-fluid px-4 px-lg-5">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-dumbbell" style="color:var(--accent);"></i> FitPro GYM
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#publicNav"
+                style="border-color:var(--border); color:var(--text-main);">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="publicNav">
+                <ul class="navbar-nav ms-auto align-items-center gap-1">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}"><i class="fas fa-house me-1"></i>Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'about' %}"><i class="fas fa-circle-info me-1"></i>About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'plans' %}"><i class="fas fa-id-card me-1"></i>Plans</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'gallery_view' %}"><i class="fas fa-images me-1"></i>Gallery</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contact' %}"><i class="fas fa-phone me-1"></i>Contact</a></li>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-nav-primary" href="{% url 'admin_login' %}">
+                            <i class="fas fa-user-shield me-1"></i>Admin
+                        </a>
+                    </li>
+                    <li class="nav-item ms-1">
+                        <a class="btn btn-outline-primary btn-sm" href="{% url 'member_login' %}" style="border-radius:8px;">
+                            <i class="fas fa-user me-1"></i>Member Login
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endblock navbar %}
+
+{% endif %}
+
+<!-- ─── MAIN CONTENT ─── -->
+<main class="{% if user.is_authenticated %}main-content{% else %}container mt-4{% endif %}">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-3" role="alert">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' or message.tags == 'danger' %}exclamation-circle{% else %}info-circle{% endif %} me-2"></i>
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" style="filter:invert(1);"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</main>
+
+{% if user.is_authenticated %}
+    <footer class="main-footer" style="margin-left:var(--sidebar-width);">
+        © 2025 FitPro GYM Management System. All rights reserved.
+    </footer>
+{% else %}
+    {% block footer %}
+    <footer style="background:var(--sidebar-bg); border-top:1px solid var(--border); padding:2rem 0; margin-top:4rem;">
+        <div class="container text-center">
+            <div class="logo-text mb-1" style="font-size:1.2rem; font-weight:800; background:linear-gradient(135deg,var(--primary-light),var(--accent)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">FitPro GYM</div>
+            <p style="color:var(--text-muted); font-size:0.82rem; margin:0;">© 2025 FitPro GYM. Transforming Lives, One Rep at a Time.</p>
+        </div>
+    </footer>
+    {% endblock footer %}
+{% endif %}
+
+<!-- Bootstrap JS -->
+<script src="{% static 'gym/js/bootstrap.bundle.min.js' %}"></script>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+    }
+
+    setTimeout(() => {
+        document.querySelectorAll('.alert').forEach(a => {
+            const bsAlert = bootstrap.Alert.getOrCreateInstance(a);
+            bsAlert.close();
+        });
+    }, 4000);
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>
+    {% if mode == 'add' %}
+        Add Workout Plan
+    {% else %}
+        Edit Workout Plan
+    {% endif %}
+</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-9">
+
+            <div class="card shadow-lg border-0">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h3 class="mb-0">
+                        <i class="fa-solid fa-dumbbell"></i>
+
+                        {% if mode == 'add' %}
+                            Add Workout Plan
+                        {% else %}
+                            Edit Workout Plan
+                        {% endif %}
+                    </h3>
+
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        <div class="row g-4">
+
+                            <!-- Member -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-bold">
+
+                                    Member
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <select
+                                    name="member_id"
+                                    class="form-select"
+                                    required>
+
+                                    <option value="">
+                                        -- Select Member --
+                                    </option>
+
+                                    {% for member in members %}
+
+                                    <option value="{{ member.id }}"
+                                        {% if mode == 'edit' and workout_plan.member.id == member.id %}
+                                            selected
+                                        {% endif %}>
+
+                                        {{ member.full_name }}
+
+                                    </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+                            <!-- Workout Title -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-bold">
+
+                                    Workout Title
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="title"
+                                    class="form-control"
+                                    placeholder="Example: Chest & Triceps"
+                                    value="{{ workout_plan.title|default:'' }}"
+                                    required>
+
+                            </div>
+
+                            <!-- Date -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-bold">
+
+                                    Created Date
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <input
+                                    type="date"
+                                    name="date"
+                                    class="form-control"
+                                    value="{% if mode == 'edit' %}{{ workout_plan.date|date:'Y-m-d' }}{% endif %}"
+                                    required>
+
+                            </div>
+
+                            <!-- Description -->
+
+                            <div class="col-md-6">
+
+                                <label class="form-label fw-bold">
+
+                                    Description
+                                    <span class="text-danger">*</span>
+
+                                </label>
+
+                                <textarea
+                                    name="description"
+                                    rows="4"
+                                    class="form-control"
+                                    placeholder="Enter workout details..."
+                                    required>{{ workout_plan.description|default:'' }}</textarea>
+
+                            </div>
+
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+
+                            <a href="{% url 'admin_workout_plan_list' %}"
+                               class="btn btn-secondary">
+
+                                <i class="fa-solid fa-arrow-left"></i>
+
+                                Back
+
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                <i class="fa-solid fa-floppy-disk"></i>
+
+                                {% if mode == 'add' %}
+                                    Save Workout Plan
+                                {% else %}
+                                    Update Workout Plan
+                                {% endif %}
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                    {% if mode == 'edit' %}
+
+                    <hr>
+
+                    <form
+                        action="{% url 'admin_workout_plan_delete' workout_plan.id %}"
+                        method="POST">
+
+                        {% csrf_token %}
+
+                        <button
+                            type="submit"
+                            class="btn btn-danger"
+                            onclick="return confirm('Are you sure you want to delete this workout plan?')">
+
+                            <i class="fa-solid fa-trash"></i>
+
+                            Delete Workout Plan
+
+                        </button>
+
+                    </form>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

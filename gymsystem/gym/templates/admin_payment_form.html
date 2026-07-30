@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>{% if mode == "edit" %}Edit Payment{% else %}Add Payment{% endif %}</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card shadow border-0">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h3 class="mb-0">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+
+                        {% if mode == "edit" %}
+                        Edit Payment
+                        {% else %}
+                        Add Payment
+                        {% endif %}
+
+                    </h3>
+
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        <div class="row">
+
+                            <!-- Member -->
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+                                    Member <span class="text-danger">*</span>
+                                </label>
+
+                                <select name="member" class="form-select" required>
+
+                                    <option value="">Select Member</option>
+
+                                    {% for member in members %}
+
+                                    <option value="{{ member.id }}"
+                                        {% if payment.member.id == member.id %}selected{% endif %}>
+
+                                        {{ member.full_name }}
+
+                                    </option>
+
+                                    {% endfor %}
+
+                                </select>
+
+                            </div>
+
+                            <!-- Membership Plan -->
+                             <div class="col-md-6 mb-3">
+
+    <label class="form-label">
+        Membership Plan
+    </label>
+
+    <select name="plan" class="form-select">
+
+        <option value="">Select Plan</option>
+
+        {% for plan in plans %}
+
+        <option value="{{ plan.id }}"
+            {% if payment and payment.plan and payment.plan.id == plan.id %}selected{% endif %}>
+
+            {{ plan.name }}
+
+        </option>
+
+        {% empty %}
+
+        <option disabled>No Membership Plans Available</option>
+
+        {% endfor %}
+
+    </select>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                            <!-- Amount -->
+
+                            <div class="col-md-4 mb-3">
+
+                                <label class="form-label">
+
+                                    Amount
+
+                                </label>
+
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="amount"
+                                    class="form-control"
+                                    value="{{ payment.amount }}"
+                                    required>
+
+                            </div>
+
+                            <!-- Discount -->
+
+                            <div class="col-md-4 mb-3">
+
+                                <label class="form-label">
+
+                                    Discount
+
+                                </label>
+
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="discount"
+                                    class="form-control"
+                                    value="{{ payment.discount|default:0 }}">
+
+                            </div>
+
+                            <!-- GST -->
+
+                            <div class="col-md-4 mb-3">
+
+                                <label class="form-label">
+
+                                    GST
+
+                                </label>
+
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="gst"
+                                    class="form-control"
+                                    value="{{ payment.gst|default:0 }}">
+
+                            </div>
+
+                            <!-- Payment Date -->
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+
+                                    Payment Date
+
+                                </label>
+
+                                <input
+                                    type="date"
+                                    name="payment_date"
+                                    class="form-control"
+                                    value="{{ payment.payment_date|date:'Y-m-d' }}">
+
+                            </div>
+
+                            <!-- Payment Mode -->
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+
+                                    Payment Mode
+
+                                </label>
+
+                                <select
+                                    name="mode"
+                                    class="form-select"
+                                    required>
+
+                                    <option value="">Select</option>
+
+                                    <option value="CASH"
+                                        {% if payment.mode == "CASH" %}selected{% endif %}>
+                                        Cash
+                                    </option>
+
+                                    <option value="ONLINE"
+                                        {% if payment.mode == "ONLINE" %}selected{% endif %}>
+                                        Online
+                                    </option>
+
+                                    <option value="CARD"
+                                        {% if payment.mode == "CARD" %}selected{% endif %}>
+                                        Card
+                                    </option>
+
+                                    <option value="UPI"
+                                        {% if payment.mode == "UPI" %}selected{% endif %}>
+                                        UPI
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <!-- Payment Status -->
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+
+                                    Payment Status
+
+                                </label>
+
+                                <select
+                                    name="status"
+                                    class="form-select"
+                                    required>
+
+                                    <option value="PAID"
+                                        {% if payment.status == "PAID" %}selected{% endif %}>
+                                        Paid
+                                    </option>
+
+                                    <option value="PENDING"
+                                        {% if payment.status == "PENDING" %}selected{% endif %}>
+                                        Pending
+                                    </option>
+
+                                    <option value="FAILED"
+                                        {% if payment.status == "FAILED" %}selected{% endif %}>
+                                        Failed
+                                    </option>
+
+                                    <option value="REFUNDED"
+                                        {% if payment.status == "REFUNDED" %}selected{% endif %}>
+                                        Refunded
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <!-- Transaction ID -->
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="form-label">
+
+                                    Transaction ID
+
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="transaction_id"
+                                    class="form-control"
+                                    value="{{ payment.transaction_id }}">
+
+                            </div>
+
+                            <!-- Notes -->
+
+                            <div class="col-12 mb-3">
+
+                                <label class="form-label">
+
+                                    Notes
+
+                                </label>
+
+                                <textarea
+                                    name="notes"
+                                    rows="4"
+                                    class="form-control">{{ payment.notes }}</textarea>
+
+                            </div>
+
+                        </div>
+
+                        <div class="text-end">
+
+                            <a href="{% url 'admin_payment_list' %}"
+                                class="btn btn-secondary">
+
+                                <i class="fa-solid fa-arrow-left"></i>
+
+                                Back
+
+                            </a>
+
+                            <button
+                                type="submit"
+                                class="btn btn-primary">
+
+                                <i class="fa-solid fa-floppy-disk"></i>
+
+                                {% if mode == "edit" %}
+                                Update Payment
+                                {% else %}
+                                Save Payment
+                                {% endif %}
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

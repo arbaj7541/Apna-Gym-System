@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>
+    {% if mode == 'edit' %}
+        Edit Attendance
+    {% else %}
+        Add Attendance
+    {% endif %}
+</title>
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+
+            <div class="card shadow-lg border-0">
+
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fa-solid fa-calendar-check"></i>
+
+                        {% if mode == 'edit' %}
+                            Edit Attendance
+                        {% else %}
+                            Add Attendance
+                        {% endif %}
+                    </h3>
+                </div>
+
+                <div class="card-body">
+
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="row g-4">
+
+                            <!-- Member -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    Member <span class="text-danger">*</span>
+                                </label>
+
+                                <select name="member_id" class="form-select" required>
+
+                                    <option value="">Select Member</option>
+
+                                    {% for member in members %}
+                                    <option value="{{ member.id }}"
+                                        {% if attendance.member.id == member.id %}selected{% endif %}>
+                                        {{ member.full_name }} ({{ member.user.username }})
+                                    </option>
+                                    {% endfor %}
+
+                                </select>
+                            </div>
+
+                            <!-- Date -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    Date <span class="text-danger">*</span>
+                                </label>
+
+                                <input
+                                    type="date"
+                                    name="date"
+                                    class="form-control"
+                                    value="{% if attendance %}{{ attendance.date|date:'Y-m-d' }}{% else %}{{ today|date:'Y-m-d' }}{% endif %}"
+                                    required>
+                            </div>
+
+                            <!-- Time -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    Time In <span class="text-danger">*</span>
+                                </label>
+
+                                <input
+                                    type="time"
+                                    name="time_in"
+                                    class="form-control"
+                                    value="{% if attendance %}{{ attendance.time_in|time:'H:i' }}{% endif %}"
+                                    required>
+                            </div>
+
+                            <!-- Status -->
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">
+                                    Status
+                                </label>
+
+                                <select name="status" class="form-select">
+
+                                    <option value="PRESENT"
+                                        {% if attendance.status == 'PRESENT' %}selected{% endif %}>
+                                        ✅ Present
+                                    </option>
+
+                                    <option value="ABSENT"
+                                        {% if attendance.status == 'ABSENT' %}selected{% endif %}>
+                                        ❌ Absent
+                                    </option>
+
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between">
+
+                            <a href="{% url 'admin_attendence_list' %}"
+                               class="btn btn-secondary">
+                                <i class="fa-solid fa-arrow-left"></i>
+                                Back
+                            </a>
+
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fa-solid fa-floppy-disk"></i>
+
+                                {% if mode == 'edit' %}
+                                    Update Attendance
+                                {% else %}
+                                    Save Attendance
+                                {% endif %}
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

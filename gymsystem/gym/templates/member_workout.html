@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block title %}<title>My Workout Plan | FitPro GYM</title>{% endblock %}
+{% block page_title %}My Workout Plan{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1><i class="fas fa-fire me-2" style="color:var(--danger);"></i>My Workout Plan</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'member_dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item active">Workout Plan</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="d-flex gap-2">
+        {% for day in days %}
+        <a href="?day={{ day }}" class="btn btn-sm {% if day_filter == day %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            {{ day|title|slice:":3" }}
+        </a>
+        {% endfor %}
+        {% if day_filter %}<a href="." class="btn btn-sm" style="background:rgba(255,255,255,0.07); color:var(--text-muted);">Clear</a>{% endif %}
+    </div>
+</div>
+
+{% if grouped_workouts %}
+    {% for day, workouts in grouped_workouts.items %}
+    <div class="glass-card p-4 mb-4 fade-in">
+        <h5 style="font-weight:700; color:var(--accent); margin-bottom:1.25rem; text-transform:uppercase; letter-spacing:1px; font-size:0.95rem;">
+            <i class="fas fa-calendar-day me-2"></i>{{ day|title }}
+        </h5>
+        <div class="row g-3">
+            {% for workout in workouts %}
+            <div class="col-md-6">
+                <div style="background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:12px; padding:1rem; transition:all 0.2s;">
+                    <div class="d-flex align-items-start gap-3">
+                        <div style="width:48px; height:48px; border-radius:12px; background:rgba(239,68,68,0.15); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            <i class="fas fa-dumbbell" style="color:var(--danger); font-size:1.2rem;"></i>
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-weight:700; font-size:0.95rem;">{{ workout.exercise_name }}</div>
+                            <div style="font-size:0.78rem; color:var(--text-muted); margin:0.25rem 0;">{{ workout.title }}</div>
+                            <div class="d-flex flex-wrap gap-2 mt-2">
+                                <span style="background:rgba(124,58,237,0.15); color:var(--primary-light); font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:6px; font-weight:600;">
+                                    {{ workout.sets }} Sets
+                                </span>
+                                <span style="background:rgba(16,185,129,0.15); color:var(--success); font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:6px; font-weight:600;">
+                                    {{ workout.reps }} Reps
+                                </span>
+                                {% if workout.weight %}<span style="background:rgba(245,158,11,0.15); color:var(--accent); font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:6px; font-weight:600;">{{ workout.weight }}kg</span>{% endif %}
+                                <span style="background:rgba(239,68,68,0.15); color:var(--danger); font-size:0.72rem; padding:0.2rem 0.6rem; border-radius:6px; font-weight:600;">{{ workout.rest_seconds }}s rest</span>
+                            </div>
+                            <div class="d-flex gap-3 mt-2">
+                                {% if workout.duration_minutes %}<span style="font-size:0.75rem; color:var(--text-muted);"><i class="fas fa-clock me-1"></i>{{ workout.duration_minutes }} min</span>{% endif %}
+                                {% if workout.calories_burned %}<span style="font-size:0.75rem; color:var(--text-muted);"><i class="fas fa-fire me-1" style="color:var(--danger);"></i>{{ workout.calories_burned }} kcal</span>{% endif %}
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge" style="background:rgba({% if workout.difficulty == 'BEGINNER' %}16,185,129{% elif workout.difficulty == 'INTERMEDIATE' %}245,158,11{% else %}239,68,68{% endif %},0.2); color:{% if workout.difficulty == 'BEGINNER' %}#10b981{% elif workout.difficulty == 'INTERMEDIATE' %}#f59e0b{% else %}#ef4444{% endif %}; font-size:0.7rem;">
+                                {{ workout.difficulty }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<div class="glass-card p-5 text-center">
+    <div style="font-size:4rem; margin-bottom:1rem;">🏋️</div>
+    <h4 style="font-weight:700;">No Workout Plan Yet</h4>
+    <p style="color:var(--text-muted);">Your trainer hasn't assigned a workout plan yet. Check back soon!</p>
+    <a href="{% url 'member_dashboard' %}" class="btn btn-primary mt-2">Back to Dashboard</a>
+</div>
+{% endif %}
+{% endblock %}
